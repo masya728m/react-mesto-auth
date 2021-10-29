@@ -1,0 +1,38 @@
+.header {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0;
+  max-width: 880px;
+  min-width: 320px;
+  position: relative;
+  display: block;
+}
+
+.header:before {
+  content: '';
+  position: absolute;
+  opacity: 0.7;
+  width: 100%;
+  height: 100%;
+  border-bottom: 1px solid #545454;
+}
+
+@media screen and (min-width: 425px) and (max-width: 1280px) {
+  .header {
+    max-width: calc(880 * calc(100vw / 1280));
+  }
+}
+
+@media screen and (min-width: 425px) {
+  .header {
+    margin-top: 45px;
+    min-height: 74px;
+  }
+}
+
+@media screen and (max-width: 425px) {
+  .header {
+    margin-top: 28px;
+    min-height: 56px;
+  }
+}
