@@ -20,7 +20,7 @@ export const EditProfilePopup = React.memo((props) => {
       return;
     setButtonText('Сохранить');
     setFieldsValidity({
-      profileNameFieldValidity:  true,
+      profileNameFieldValidity: true,
       profileAboutFieldValidity: true
     });
   }, [props.isOpen]);
@@ -34,26 +34,26 @@ export const EditProfilePopup = React.memo((props) => {
     setFieldsValidity({
       ...fieldsValidity,
       profileNameFieldErrorDescription: '',
-      profileNameFieldValidity:         true
+      profileNameFieldValidity: true
     });
   };
 
   const handleProfileNameFieldError = (errorDescription) => setFieldsValidity({
     ...fieldsValidity,
     profileNameFieldErrorDescription: errorDescription,
-    profileNameFieldValidity:         false
+    profileNameFieldValidity: false
   });
 
   const handleProfileAboutFieldValidity = () => setFieldsValidity({
     ...fieldsValidity,
     profileAboutFieldErrorDescription: '',
-    profileAboutFieldValidity:         true
+    profileAboutFieldValidity: true
   });
 
   const handleProfileAboutFieldError = (errorDescription) => setFieldsValidity({
     ...fieldsValidity,
     profileAboutFieldErrorDescription: errorDescription,
-    profileAboutFieldValidity:         false
+    profileAboutFieldValidity: false
   });
 
   return (

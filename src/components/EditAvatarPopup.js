@@ -19,7 +19,7 @@ export const EditAvatarPopup = React.memo((props) => {
 
   const handleChange = (e) => {
     setValidity({
-      valid:        e.target.validity.valid,
+      valid: e.target.validity.valid,
       errorMessage: e.target.validationMessage
     });
   };

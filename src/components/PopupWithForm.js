@@ -6,7 +6,7 @@ export default class PopupWithForm extends PopupBase {
   handleSubmit = (e) => {
     e.preventDefault();
     this.props.onSubmit?.();
-  }
+  };
 
   render() {
     return (

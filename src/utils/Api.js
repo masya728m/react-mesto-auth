@@ -17,7 +17,7 @@ export class Api {
 
   setUserInfo({name, about}) {
     return this._request('PATCH', '/users/me', {
-      name:  name,
+      name: name,
       about: about
     });
   }
@@ -60,7 +60,7 @@ export class Api {
 export const yandexApi = new Api({
   baseUrl: process.env.REACT_APP_API_URL,
   headers: {
-    authorization:  process.env.REACT_APP_API_KEY,
+    authorization: process.env.REACT_APP_API_KEY,
     'Content-Type': 'application/json'
   }
 });

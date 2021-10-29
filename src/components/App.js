@@ -27,9 +27,9 @@ function App() {
     Promise.all([yandexApi.getUserInfo(), yandexApi.getInitialCards()])
       .then(([info, cardList]) => {
         setCurrentUser({
-          avatar:    info.avatar,
-          name:      info.name,
-          about:     info.about,
+          avatar: info.avatar,
+          name: info.name,
+          about: info.about,
           profileId: info._id
         });
         cardList = Array.from(cardList).map(card => {
@@ -65,7 +65,7 @@ function App() {
       .then(() => {
         setCurrentUser({
           ...currentUser,
-          name:  profileName,
+          name: profileName,
           about: profileAbout
         });
         closeAllPopups();

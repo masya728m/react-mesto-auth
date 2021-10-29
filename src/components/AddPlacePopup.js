@@ -24,7 +24,7 @@ export const AddPlacePopup = React.memo((props) => {
     setFieldsValidity({
       ...fieldsValidity,
       imageLinkFieldErrorDescription: '',
-      imageLinkFieldValidity:         true
+      imageLinkFieldValidity: true
     });
   };
 
@@ -32,7 +32,7 @@ export const AddPlacePopup = React.memo((props) => {
     setFieldsValidity({
       ...fieldsValidity,
       placeNameFieldErrorDescription: '',
-      placeNameFieldValidity:         true
+      placeNameFieldValidity: true
     });
   };
 
@@ -40,7 +40,7 @@ export const AddPlacePopup = React.memo((props) => {
     setFieldsValidity({
       ...fieldsValidity,
       imageLinkFieldErrorDescription: errorDescription,
-      imageLinkFieldValidity:         false
+      imageLinkFieldValidity: false
     });
   };
 
@@ -48,7 +48,7 @@ export const AddPlacePopup = React.memo((props) => {
     setFieldsValidity({
       ...fieldsValidity,
       placeNameFieldErrorDescription: errorDescription,
-      placeNameFieldValidity:         false
+      placeNameFieldValidity: false
     });
   };
 

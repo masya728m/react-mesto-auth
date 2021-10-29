@@ -11,7 +11,7 @@ export const ConfirmDialogPopup = React.memo((props) => {
   const handleSubmit = () => {
     setButtonText('Сохранение...');
     props.onSubmit?.();
-  }
+  };
 
   return (
     <PopupWithForm
