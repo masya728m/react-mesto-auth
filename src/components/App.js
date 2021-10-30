@@ -177,7 +177,12 @@ function App() {
           onClose={closeAllPopups}
         />
 
-        <Header/>
+        <Header
+          buttonText="Выйти"
+          onClick={() => {
+          }}
+          userEmail="masya728@gmail.com"
+        />
         <Main
           cards={cards}
           onCardClick={handleCardClick}

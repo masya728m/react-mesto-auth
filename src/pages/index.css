@@ -7,7 +7,15 @@
 
 /* header */
 @import url('../blocks/header/header.css');
+@import url('../blocks/header/_hidden/header_hidden.css');
 @import url('../blocks/header/__logo/header__logo.css');
+@import url('../blocks/header/__text/_type/header__text_type_button.css');
+@import url('../blocks/header/__text/header__text.css');
+@import url('../blocks/header/__side-container/header__side-container.css');
+@import url('../blocks/header/__button/header__button.css');
+@import url('../blocks/header/__button/_state/header__button_state_close.css');
+@import url('../blocks/header/__button/_state/header__button_state_expand.css');
+@import url('../blocks/header/__container/header__container.css');
 
 /* skeleton animation */
 @import url('../blocks/skeleton/skeleton.css');
