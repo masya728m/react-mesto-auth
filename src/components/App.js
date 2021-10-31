@@ -1,5 +1,5 @@
 import React from 'react';
-import {Route, Switch, useHistory, withRouter} from 'react-router-dom';
+import {Link, Route, Switch, useHistory, withRouter} from 'react-router-dom';
 import Header from './Header';
 import Main from './Main';
 import Footer from './Footer';
@@ -13,6 +13,7 @@ import {AddPlacePopup} from './AddPlacePopup';
 import {ConfirmDialogPopup} from './ConfirmDialogPopup';
 import ProtectedRoute from './ProtectedRoute';
 import Login from './Login';
+import Register from './Register';
 
 function App() {
   const [targetCard, setTargetCard] = React.useState(null);
@@ -20,6 +21,7 @@ function App() {
   const [popupImageName, setPopupImageName] = React.useState('');
   const [popupImageLink, setPopupImageLink] = React.useState('');
   const [currentUser, setCurrentUser] = React.useState({});
+  const [loggedIn, setLoggedIn] = React.useState(false);
 
   const appHistory = useHistory();
 
@@ -137,19 +139,54 @@ function App() {
     <Switch>
       <CurrentUserContext.Provider value={currentUser}>
         <div className="page">
-          <Header
-            buttonText="Выйти"
-            onClick={() => {
-            }}
-            userEmail="masya728@gmail.com"
-          />
+          <Header>
+            {loggedIn ?
+              (
+                <>
+                  <h2 className="header__text">{currentUser.name}</h2>
+                  <Link
+                    to="/login"
+                    className="header__text header__text_type_button"
+                    type="button"
+                  >
+                    Выйти
+                  </Link>
+                </>
+              ) :
+              (
+                appHistory.location.pathname === '/login' ?
+                  (
+                    <Link
+                      to="/register"
+                      className="header__text header__text_type_button"
+                      type="button"
+                    >
+                      Зарегистрироваться
+                    </Link>
+                  ) :
+                  (
+                    <Link
+                      to="/login"
+                      className="header__text header__text_type_button"
+                      type="button"
+                    >
+                      Войти
+                    </Link>
+                  )
+              )}
+          </Header>
 
           <Route path="/login">
             <Login/>
           </Route>
 
+          <Route path="/register">
+            <Register/>
+          </Route>
+
           <ProtectedRoute
             path="/profile-edit"
+            loggedIn={loggedIn}
             component={EditProfilePopup}
             onClose={closeAllPopups}
             onSubmit={handleEditProfileSubmit}
@@ -157,6 +194,7 @@ function App() {
 
           <ProtectedRoute
             path="/add-place"
+            loggedIn={loggedIn}
             component={AddPlacePopup}
             onClose={closeAllPopups}
             onSubmit={handleAddPlaceSubmit}
@@ -164,6 +202,7 @@ function App() {
 
           <ProtectedRoute
             path="/avatar-edit"
+            loggedIn={loggedIn}
             component={EditAvatarPopup}
             onClose={closeAllPopups}
             onSubmit={handleEditAvatarSubmit}
@@ -171,12 +210,14 @@ function App() {
 
           <ProtectedRoute
             path={`/delete/cards/${targetCard}`}
+            loggedIn={loggedIn}
             component={ConfirmDialogPopup}
             onClose={closeAllPopups}
             onSubmit={handleDeleteConfirmSubmit}
           />
           <ProtectedRoute
             path={`/cards/${popupImageName}`}
+            loggedIn={loggedIn}
             component={ImagePopup}
             name="image-overview"
             imageName={popupImageName}
@@ -185,6 +226,7 @@ function App() {
           />
           <ProtectedRoute
             path="/main"
+            loggedIn={loggedIn}
             component={Main}
             cards={cards}
             onCardClick={handleCardClick}
@@ -194,7 +236,7 @@ function App() {
             onAddPlace={handleAddPlaceClick}
             onEditAvatar={handleEditAvatarClick}
           />
-          <Footer/>
+          {loggedIn && <Footer/>}
         </div>
       </CurrentUserContext.Provider>
     </Switch>

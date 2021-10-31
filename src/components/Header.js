@@ -25,14 +25,7 @@ export default function Header(props) {
         />
       </div>
       <div className={`header__side-container ${headerButtonState && 'header_hidden'}`}>
-        {props.userEmail && <h2 className="header__text">{props.userEmail}</h2>}
-        <button
-          onClick={props.onClick}
-          className="header__text header__text_type_button"
-          type="button"
-        >
-          {props.buttonText}
-        </button>
+        {props.children}
       </div>
     </header>
   );

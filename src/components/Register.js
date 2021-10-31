@@ -2,7 +2,7 @@ import React from 'react';
 import PopupField from './PopupField';
 import {Link} from 'react-router-dom';
 
-export default function Login(props) {
+export default function Register(props) {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
 
@@ -13,7 +13,7 @@ export default function Login(props) {
   return (
     <div className="popup__container unauthorized-container">
       <form className="popup__form" name="popup__window" noValidate={true} onSubmit={handleSubmit}>
-        <h2 className="popup__title popup__title_centered">Вход</h2>
+        <h2 className="popup__title popup__title_centered">Регистрация</h2>
         <fieldset className="popup__input-container unauthorized-container__fieldset">
           <PopupField
             additionalClass="unauthorized-container unauthorized-container__field"
@@ -32,8 +32,14 @@ export default function Login(props) {
           type="submit"
           className="popup__submit-button unauthorized-container__button"
         >
-          Войти
+          Зарегистрироваться
         </button>
+        <Link
+          className="popup__submit-button"
+          to="/login"
+        >
+          Уже зарегестрированы? Войти
+        </Link>
       </form>
     </div>
   );
