@@ -7,6 +7,13 @@ export class Api {
     this._headers = headers;
   }
 
+  setToken(token) {
+    this._headers = {
+      ...this._headers,
+      authorization: `Bearer ${token}`
+    };
+  }
+
   getUserInfo() {
     return this._request('GET', '/users/me');
   }
@@ -61,6 +68,29 @@ export const yandexApi = new Api({
   baseUrl: process.env.REACT_APP_API_URL,
   headers: {
     authorization: process.env.REACT_APP_API_KEY,
+    'Content-Type': 'application/json'
+  }
+});
+
+class AuthApi extends Api {
+  register(email, password) {
+    return this._request('POST', '/signup', {
+      email,
+      password
+    });
+  }
+
+  login(email, password) {
+    return this._request('POST', '/signin', {
+      email,
+      password
+    });
+  }
+}
+
+export const yandexAuthApi = new AuthApi({
+  baseUrl: process.env.REACT_APP_AUTH_API_URL,
+  headers: {
     'Content-Type': 'application/json'
   }
 });

@@ -14,18 +14,28 @@ import {ConfirmDialogPopup} from './ConfirmDialogPopup';
 import ProtectedRoute from './ProtectedRoute';
 import Login from './Login';
 import Register from './Register';
+import InfoTooltip from './InfoTooltip';
 
 function App() {
+  const [isEditProfilePopupOpen, setEditProfilePopupOpen] = React.useState(false);
+  const [isAddPlacePopupOpen, setAddPlacePopupOpen] = React.useState(false);
+  const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = React.useState(false);
+  const [isConfirmPopupOpen, setConfirmPopupOpen] = React.useState(false);
+  const [isImagePopupOpen, setImagePopupOpen] = React.useState(false);
+  const [isInfoTooltipOpen, setInfoTooltipOpen] = React.useState(false);
   const [targetCard, setTargetCard] = React.useState(null);
   const [cards, setCards] = React.useState([]);
   const [popupImageName, setPopupImageName] = React.useState('');
   const [popupImageLink, setPopupImageLink] = React.useState('');
   const [currentUser, setCurrentUser] = React.useState({});
   const [loggedIn, setLoggedIn] = React.useState(false);
+  const [authSuccess, setAuthSuccess] = React.useState(false);
 
   const appHistory = useHistory();
 
   React.useEffect(() => {
+    if (!loggedIn)
+      return;
     Promise.all([yandexApi.getUserInfo(), yandexApi.getInitialCards()])
       .then(([info, cardList]) => {
         setCurrentUser({
@@ -46,14 +56,20 @@ function App() {
       .catch(err => {
         console.log(err);
       });
-  }, []);
+  }, [loggedIn]);
 
   const closeAllPopups = () => {
-    appHistory.push('/main');
+    setEditProfilePopupOpen(false);
+    setAddPlacePopupOpen(false);
+    setEditAvatarPopupOpen(false);
+    setConfirmPopupOpen(false);
+    setImagePopupOpen(false);
+    setInfoTooltipOpen(false);
   };
 
   const handleEditProfileClick = () => {
-    appHistory.push('profile-edit');
+    setEditProfilePopupOpen(true);
+
   };
 
   const handleEditProfileSubmit = ({profileName, profileAbout}) => {
@@ -81,7 +97,8 @@ function App() {
   };
 
   const handleAddPlaceClick = () => {
-    appHistory.push('/add-place');
+    setAddPlacePopupOpen(true);
+
   };
 
   const handleEditAvatarSubmit = ({profileAvatar}) => {
@@ -98,13 +115,15 @@ function App() {
   };
 
   const handleEditAvatarClick = () => {
-    appHistory.push('/avatar-edit');
+    setEditAvatarPopupOpen(true);
+
   };
 
   const handleCardClick = (card) => {
     setPopupImageName(card.name);
     setPopupImageLink(card.link);
-    appHistory.push(`/cards/${card.name}`);
+    setImagePopupOpen(true);
+
   };
 
   const handleCardLike = (card) => {
@@ -135,95 +154,111 @@ function App() {
 
   };
 
+  const handleLoginSuccess = (res) => {
+    console.log(res);
+    if (!res.token)
+      return;
+    localStorage.setItem('jwt', res.token);
+    setLoggedIn(true);
+    appHistory.push('/main');
+  };
+
+  const handleRegisterSuccess = () => {
+    setAuthSuccess(true);
+    setInfoTooltipOpen(true);
+  };
+
+  const handleAuthFail = () => {
+    setAuthSuccess(false);
+    setInfoTooltipOpen(true);
+  };
+
   return (
-    <Switch>
-      <CurrentUserContext.Provider value={currentUser}>
-        <div className="page">
-          <Header>
-            {loggedIn ?
-              (
-                <>
-                  <h2 className="header__text">{currentUser.name}</h2>
+    <CurrentUserContext.Provider value={currentUser}>
+      <div className="page">
+        <Header>
+          {loggedIn ?
+            (
+              <>
+                <h2 className="header__text">{currentUser.name}</h2>
+                <Link
+                  to="/login"
+                  className="header__text header__text_type_button"
+                  type="button"
+                  onClick={() => setLoggedIn(false)}
+                >
+                  Выйти
+                </Link>
+              </>
+            ) :
+            (
+              appHistory.location.pathname === '/login' ?
+                (
+                  <Link
+                    to="/register"
+                    className="header__text header__text_type_button"
+                    type="button"
+                  >
+                    Зарегистрироваться
+                  </Link>
+                ) :
+                (
                   <Link
                     to="/login"
                     className="header__text header__text_type_button"
                     type="button"
                   >
-                    Выйти
+                    Войти
                   </Link>
-                </>
-              ) :
-              (
-                appHistory.location.pathname === '/login' ?
-                  (
-                    <Link
-                      to="/register"
-                      className="header__text header__text_type_button"
-                      type="button"
-                    >
-                      Зарегистрироваться
-                    </Link>
-                  ) :
-                  (
-                    <Link
-                      to="/login"
-                      className="header__text header__text_type_button"
-                      type="button"
-                    >
-                      Войти
-                    </Link>
-                  )
-              )}
-          </Header>
+                )
+            )}
+        </Header>
 
+        <InfoTooltip
+          isOpen={isInfoTooltipOpen}
+          success={authSuccess}
+          onClose={closeAllPopups}
+          title="Вы успешно зарегистрировались"
+        />
+
+        <EditProfilePopup
+          isOpen={isEditProfilePopupOpen}
+          onClose={closeAllPopups}
+          onSubmit={handleEditProfileSubmit}
+        />
+
+        <AddPlacePopup
+          isOpen={isAddPlacePopupOpen}
+          onClose={closeAllPopups}
+          onSubmit={handleAddPlaceSubmit}
+        />
+
+        <EditAvatarPopup
+          isOpen={isEditAvatarPopupOpen}
+          onClose={closeAllPopups}
+          onSubmit={handleEditAvatarSubmit}
+        />
+
+        <ConfirmDialogPopup
+          isOpen={isConfirmPopupOpen}
+          onClose={closeAllPopups}
+          onSubmit={handleDeleteConfirmSubmit}
+        />
+        <ImagePopup
+          name="image-overview"
+          opened={isImagePopupOpen}
+          imageName={popupImageName}
+          imageLink={popupImageLink}
+          onClose={closeAllPopups}
+        />
+        <Switch>
           <Route path="/login">
-            <Login/>
+            <Login onSuccess={handleLoginSuccess} onFail={handleAuthFail}/>
           </Route>
 
           <Route path="/register">
-            <Register/>
+            <Register onSuccess={handleRegisterSuccess} onFail={handleAuthFail}/>
           </Route>
-
-          <ProtectedRoute
-            path="/profile-edit"
-            loggedIn={loggedIn}
-            component={EditProfilePopup}
-            onClose={closeAllPopups}
-            onSubmit={handleEditProfileSubmit}
-          />
-
-          <ProtectedRoute
-            path="/add-place"
-            loggedIn={loggedIn}
-            component={AddPlacePopup}
-            onClose={closeAllPopups}
-            onSubmit={handleAddPlaceSubmit}
-          />
-
-          <ProtectedRoute
-            path="/avatar-edit"
-            loggedIn={loggedIn}
-            component={EditAvatarPopup}
-            onClose={closeAllPopups}
-            onSubmit={handleEditAvatarSubmit}
-          />
-
-          <ProtectedRoute
-            path={`/delete/cards/${targetCard}`}
-            loggedIn={loggedIn}
-            component={ConfirmDialogPopup}
-            onClose={closeAllPopups}
-            onSubmit={handleDeleteConfirmSubmit}
-          />
-          <ProtectedRoute
-            path={`/cards/${popupImageName}`}
-            loggedIn={loggedIn}
-            component={ImagePopup}
-            name="image-overview"
-            imageName={popupImageName}
-            imageLink={popupImageLink}
-            onClose={closeAllPopups}
-          />
           <ProtectedRoute
             path="/main"
             loggedIn={loggedIn}
@@ -236,10 +271,10 @@ function App() {
             onAddPlace={handleAddPlaceClick}
             onEditAvatar={handleEditAvatarClick}
           />
-          {loggedIn && <Footer/>}
-        </div>
-      </CurrentUserContext.Provider>
-    </Switch>
+        </Switch>
+        {loggedIn && <Footer/>}
+      </div>
+    </CurrentUserContext.Provider>
   );
 }
 

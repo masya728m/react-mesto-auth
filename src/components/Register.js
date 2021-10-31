@@ -2,13 +2,51 @@ import React from 'react';
 import PopupField from './PopupField';
 import {Link} from 'react-router-dom';
 
+import {yandexAuthApi} from '../utils/Api';
+
 export default function Register(props) {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const [fieldsValidity, setFieldsValidity] = React.useState({});
 
   const handleSubmit = (e) => {
     e.preventDefault();
-  }
+    yandexAuthApi.register(email, password)
+      .then(props.onSuccess)
+      .catch(props.onFail);
+  };
+
+  const handleEmailFieldValidity = () => {
+    setFieldsValidity({
+      ...fieldsValidity,
+      emailFieldValidity: true,
+      emailFieldErrorDescription: ''
+    });
+  };
+
+  const handleEmailFieldError = (errorDescription) => {
+    setFieldsValidity({
+      ...fieldsValidity,
+      emailFieldValidity: false,
+      emailFieldErrorDescription: errorDescription
+    });
+  };
+
+  const handlePasswordFieldValidity = () => {
+    setFieldsValidity({
+      ...fieldsValidity,
+      passwordFieldValidity: true,
+      passwordFieldErrorDescription: ''
+    });
+  };
+
+  const handlePasswordFieldError = (errorDescription) => {
+    setFieldsValidity({
+      ...fieldsValidity,
+      passwordFieldValidity: false,
+      passwordFieldErrorDescription: errorDescription
+    });
+  };
 
   return (
     <div className="popup__container unauthorized-container">
@@ -18,19 +56,32 @@ export default function Register(props) {
           <PopupField
             additionalClass="unauthorized-container unauthorized-container__field"
             placeholderText="Email"
+            fieldType="email"
             fieldValue={email}
-            onChange={(text) => setEmail(text)}
+            onChange={setEmail}
+            onValidState={handleEmailFieldValidity}
+            onErrorOccured={handleEmailFieldError}
+            errorDescription={fieldsValidity.emailFieldErrorDescription}
           />
           <PopupField
             additionalClass="unauthorized-container unauthorized-container__field"
             placeholderText="Пароль"
+            fieldType="text"
+            minLength={6}
             fieldValue={password}
-            onChange={(text) => setPassword(text)}
+            onChange={setPassword}
+            onValidState={handlePasswordFieldValidity}
+            onErrorOccured={handlePasswordFieldError}
+            errorDescription={fieldsValidity.passwordFieldErrorDescription}
           />
         </fieldset>
         <button
           type="submit"
-          className="popup__submit-button unauthorized-container__button"
+          className={
+            `popup__submit-button unauthorized-container__button 
+            ${(!fieldsValidity.passwordFieldValidity || !fieldsValidity.emailFieldValidity) &&
+            'popup__submit-button_disabled'}`}
+          disabled={(!fieldsValidity.passwordFieldValidity || !fieldsValidity.emailFieldValidity)}
         >
           Зарегистрироваться
         </button>
