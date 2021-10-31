@@ -10,7 +10,7 @@ export default class PopupWithForm extends PopupBase {
 
   render() {
     return (
-      <div className={`popup popup_type_${this.props.name} ${this.props.opened && 'popup_opened'}`}>
+      <div className={`popup popup_type_${this.props.name}`}>
         <div className="popup__container">
           <form className="popup__form" name="popup__window" noValidate={true} onSubmit={this.handleSubmit}>
             <button className="popup__exit-button" type="button" onClick={this.props.onClose}/>

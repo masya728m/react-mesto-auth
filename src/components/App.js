@@ -1,4 +1,5 @@
 import React from 'react';
+import {Route, Switch, useHistory, withRouter} from 'react-router-dom';
 import Header from './Header';
 import Main from './Main';
 import Footer from './Footer';
@@ -10,18 +11,17 @@ import {EditProfilePopup} from './EditProfilePopup';
 import {EditAvatarPopup} from './EditAvatarPopup';
 import {AddPlacePopup} from './AddPlacePopup';
 import {ConfirmDialogPopup} from './ConfirmDialogPopup';
+import ProtectedRoute from './ProtectedRoute';
+import Login from './Login';
 
 function App() {
-  const [isEditProfilePopupOpen, setEditProfilePopupOpen] = React.useState(false);
-  const [isAddPlacePopupOpen, setAddPlacePopupOpen] = React.useState(false);
-  const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = React.useState(false);
-  const [isConfirmPopupOpen, setConfirmPopupOpen] = React.useState(false);
-  const [isImagePopupOpen, setImagePopupOpen] = React.useState(false);
   const [targetCard, setTargetCard] = React.useState(null);
   const [cards, setCards] = React.useState([]);
   const [popupImageName, setPopupImageName] = React.useState('');
   const [popupImageLink, setPopupImageLink] = React.useState('');
   const [currentUser, setCurrentUser] = React.useState({});
+
+  const appHistory = useHistory();
 
   React.useEffect(() => {
     Promise.all([yandexApi.getUserInfo(), yandexApi.getInitialCards()])
@@ -47,17 +47,11 @@ function App() {
   }, []);
 
   const closeAllPopups = () => {
-    setEditProfilePopupOpen(false);
-    setAddPlacePopupOpen(false);
-    setEditAvatarPopupOpen(false);
-    setConfirmPopupOpen(false);
-    setImagePopupOpen(false);
-
+    appHistory.push('/main');
   };
 
   const handleEditProfileClick = () => {
-    setEditProfilePopupOpen(true);
-
+    appHistory.push('profile-edit');
   };
 
   const handleEditProfileSubmit = ({profileName, profileAbout}) => {
@@ -85,8 +79,7 @@ function App() {
   };
 
   const handleAddPlaceClick = () => {
-    setAddPlacePopupOpen(true);
-
+    appHistory.push('/add-place');
   };
 
   const handleEditAvatarSubmit = ({profileAvatar}) => {
@@ -103,15 +96,13 @@ function App() {
   };
 
   const handleEditAvatarClick = () => {
-    setEditAvatarPopupOpen(true);
-
+    appHistory.push('/avatar-edit');
   };
 
   const handleCardClick = (card) => {
     setPopupImageName(card.name);
     setPopupImageLink(card.link);
-    setImagePopupOpen(true);
-
+    appHistory.push(`/cards/${card.name}`);
   };
 
   const handleCardLike = (card) => {
@@ -127,9 +118,8 @@ function App() {
   };
 
   const handleCardDelete = (card) => {
-    setConfirmPopupOpen(true);
-    console.log(card);
     setTargetCard(card);
+    appHistory.push(`/delete/cards/${card}`);
   };
 
   const handleDeleteConfirmSubmit = () => {
@@ -144,58 +134,71 @@ function App() {
   };
 
   return (
-    <CurrentUserContext.Provider value={currentUser}>
-      <div className="page">
-        <EditProfilePopup
-          isOpen={isEditProfilePopupOpen}
-          onClose={closeAllPopups}
-          onSubmit={handleEditProfileSubmit}
-        />
+    <Switch>
+      <CurrentUserContext.Provider value={currentUser}>
+        <div className="page">
+          <Header
+            buttonText="Выйти"
+            onClick={() => {
+            }}
+            userEmail="masya728@gmail.com"
+          />
 
-        <AddPlacePopup
-          isOpen={isAddPlacePopupOpen}
-          onClose={closeAllPopups}
-          onSubmit={handleAddPlaceSubmit}
-        />
+          <Route path="/login">
+            <Login/>
+          </Route>
 
-        <EditAvatarPopup
-          isOpen={isEditAvatarPopupOpen}
-          onClose={closeAllPopups}
-          onSubmit={handleEditAvatarSubmit}
-        />
+          <ProtectedRoute
+            path="/profile-edit"
+            component={EditProfilePopup}
+            onClose={closeAllPopups}
+            onSubmit={handleEditProfileSubmit}
+          />
 
-        <ConfirmDialogPopup
-          isOpen={isConfirmPopupOpen}
-          onClose={closeAllPopups}
-          onSubmit={handleDeleteConfirmSubmit}
-        />
-        <ImagePopup
-          name="image-overview"
-          opened={isImagePopupOpen}
-          imageName={popupImageName}
-          imageLink={popupImageLink}
-          onClose={closeAllPopups}
-        />
+          <ProtectedRoute
+            path="/add-place"
+            component={AddPlacePopup}
+            onClose={closeAllPopups}
+            onSubmit={handleAddPlaceSubmit}
+          />
 
-        <Header
-          buttonText="Выйти"
-          onClick={() => {
-          }}
-          userEmail="masya728@gmail.com"
-        />
-        <Main
-          cards={cards}
-          onCardClick={handleCardClick}
-          onCardLike={handleCardLike}
-          onCardDelete={handleCardDelete}
-          onEditProfile={handleEditProfileClick}
-          onAddPlace={handleAddPlaceClick}
-          onEditAvatar={handleEditAvatarClick}
-        />
-        <Footer/>
-      </div>
-    </CurrentUserContext.Provider>
+          <ProtectedRoute
+            path="/avatar-edit"
+            component={EditAvatarPopup}
+            onClose={closeAllPopups}
+            onSubmit={handleEditAvatarSubmit}
+          />
+
+          <ProtectedRoute
+            path={`/delete/cards/${targetCard}`}
+            component={ConfirmDialogPopup}
+            onClose={closeAllPopups}
+            onSubmit={handleDeleteConfirmSubmit}
+          />
+          <ProtectedRoute
+            path={`/cards/${popupImageName}`}
+            component={ImagePopup}
+            name="image-overview"
+            imageName={popupImageName}
+            imageLink={popupImageLink}
+            onClose={closeAllPopups}
+          />
+          <ProtectedRoute
+            path="/main"
+            component={Main}
+            cards={cards}
+            onCardClick={handleCardClick}
+            onCardLike={handleCardLike}
+            onCardDelete={handleCardDelete}
+            onEditProfile={handleEditProfileClick}
+            onAddPlace={handleAddPlaceClick}
+            onEditAvatar={handleEditAvatarClick}
+          />
+          <Footer/>
+        </div>
+      </CurrentUserContext.Provider>
+    </Switch>
   );
 }
 
-export default App;
+export default withRouter(App);

@@ -15,7 +15,7 @@ export default function PopupField(props) {
   return (
     <div className="popup__field-wrapper">
       <input
-        className="popup__field"
+        className={`popup__field ${props.additionalClass}`}
         onChange={inputHandler}
         type={`${props.fieldType}`}
         name={`${props.fieldName}`}
