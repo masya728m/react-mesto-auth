@@ -4,7 +4,7 @@ import Header from './Header';
 import Main from './Main';
 import Footer from './Footer';
 import '../pages/index.css';
-import {yandexApi} from '../utils/Api';
+import {yandexApi, yandexAuthApi} from '../utils/Api';
 import ImagePopup from './ImagePopup';
 import {CurrentUserContext} from '../contexts/CurrentUserContext';
 import {EditProfilePopup} from './EditProfilePopup';
@@ -34,15 +34,25 @@ function App() {
   const appHistory = useHistory();
 
   React.useEffect(() => {
+    const token = localStorage.getItem('jwt');
+    if (!token)
+      return;
+    yandexAuthApi.setToken(token);
+    setLoggedIn(true);
+    appHistory.push('/');
+  }, []);
+
+  React.useEffect(() => {
     if (!loggedIn)
       return;
-    Promise.all([yandexApi.getUserInfo(), yandexApi.getInitialCards()])
-      .then(([info, cardList]) => {
+    Promise.all([yandexApi.getUserInfo(), yandexAuthApi.getUserInfo(), yandexApi.getInitialCards()])
+      .then(([info, authInfo, cardList]) => {
         setCurrentUser({
           avatar: info.avatar,
           name: info.name,
           about: info.about,
-          profileId: info._id
+          profileId: info._id,
+          email: authInfo.data.email
         });
         cardList = Array.from(cardList).map(card => {
           const isLiked = Array.from(card.likes).some(like => like._id === info._id);
@@ -160,7 +170,7 @@ function App() {
       return;
     localStorage.setItem('jwt', res.token);
     setLoggedIn(true);
-    appHistory.push('/main');
+    appHistory.push('/');
   };
 
   const handleRegisterSuccess = () => {
@@ -180,12 +190,15 @@ function App() {
           {loggedIn ?
             (
               <>
-                <h2 className="header__text">{currentUser.name}</h2>
+                <h2 className="header__text">{currentUser.email}</h2>
                 <Link
                   to="/login"
                   className="header__text header__text_type_button"
                   type="button"
-                  onClick={() => setLoggedIn(false)}
+                  onClick={() => {
+                    setLoggedIn(false);
+                    localStorage.removeItem('jwt');
+                  }}
                 >
                   Выйти
                 </Link>
@@ -252,15 +265,15 @@ function App() {
           onClose={closeAllPopups}
         />
         <Switch>
-          <Route path="/login">
+          <Route exact path="/login">
             <Login onSuccess={handleLoginSuccess} onFail={handleAuthFail}/>
           </Route>
 
-          <Route path="/register">
+          <Route exact path="/register">
             <Register onSuccess={handleRegisterSuccess} onFail={handleAuthFail}/>
           </Route>
           <ProtectedRoute
-            path="/main"
+            path="/"
             loggedIn={loggedIn}
             component={Main}
             cards={cards}
