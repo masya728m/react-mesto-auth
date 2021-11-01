@@ -1,7 +1,7 @@
 import React from 'react';
 import PopupBase from './PopupBase';
-import FailIcon from '../images/fail.svg';
-import SuccessIcon from '../images/success.svg';
+import failIcon from '../images/fail.svg';
+import successIcon from '../images/success.svg';
 
 export default class InfoTooltip extends PopupBase {
   render() {
@@ -13,14 +13,14 @@ export default class InfoTooltip extends PopupBase {
             {
               this.props.success ? (
                 <>
-                  <img src={SuccessIcon}/>
+                  <img src={successIcon} alt="Успех"/>
                   <h2 className="popup__title popup__title_centered">
                     Вы успешно зарегистрировались!
                   </h2>
                 </>
               ) : (
                 <>
-                  <img src={FailIcon}/>
+                  <img src={failIcon} alt="Ошибка"/>
                   <h2 className="popup__title popup__title_centered">
                     Что-то пошло не так!
                     Попробуйте ещё раз.
