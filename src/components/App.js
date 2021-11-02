@@ -150,7 +150,7 @@ function App() {
 
   const handleCardDelete = (card) => {
     setTargetCard(card);
-    appHistory.push(`/delete/cards/${card}`);
+    setConfirmPopupOpen(true);
   };
 
   const handleDeleteConfirmSubmit = () => {

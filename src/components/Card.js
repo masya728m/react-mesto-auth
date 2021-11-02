@@ -12,7 +12,6 @@ export default function Card(props) {
   };
 
   const handleCardDelete = () => {
-    console.log(props.cardObj);
     props.onDelete?.(props.cardObj);
   };
 
